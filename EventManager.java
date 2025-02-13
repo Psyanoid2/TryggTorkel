@@ -2,7 +2,6 @@ import java.util.*;
 
 public class EventManager {
     private static final Map<Integer, int[]> events = new HashMap<>();
-    private static final Map<Integer, Map<Integer, Object[]>> choiceRewards = new HashMap<>();
     private static final Set<Integer> starredEvents = new HashSet<>(Arrays.asList(1, 7, 8, 18, 21, 24, 25, 32, 34, 45, 47, 50, 54, 58, 59, 64, 70, 71, 74, 80, 81, 84, 85, 86, 97, 100, 101, 105, 124, 132, 135, 136, 144, 146, 148, 149, 152, 157, 158, 159, 160, 161, 163, 167, 168, 174, 175, 177, 179, 180, 181, 182, 191, 192, 195, 196, 198, 199, 203, 209, 210, 213, 214, 215, 216, 217, 666, 1000, 1701));
     private static int lastStarredEvent = -1;
 
@@ -16,114 +15,90 @@ public class EventManager {
         events.put(7, new int[]{10002, 0, 168, 7, 45, 6});
     }
 
-    public static void initializeChoiceRewards() {
-        // Event 1 rewards
-        Map<Integer, Object[]> event1Rewards = new HashMap<>();
-        event1Rewards.put(1, new Object[]{0, 0, null, 0}); // No weapon
-        event1Rewards.put(2, new Object[]{0, 0, null, 0}); // No weapon
-        event1Rewards.put(3, new Object[]{0, 0, null, 0}); // No weapon
-        event1Rewards.put(4, new Object[]{0, -10, null, 0}); // Lose 10 GP
-        event1Rewards.put(5, new Object[]{0, 0, null, 0}); // No weapon
-        event1Rewards.put(6, new Object[]{5, 0, null, 0}); // 5 EXP
-        choiceRewards.put(1, event1Rewards);
-
-        // Event 3 rewards (weapon rewards)
-        Map<Integer, Object[]> event3Rewards = new HashMap<>();
-        event3Rewards.put(1, new Object[]{0, 0, "Ett svärd", 0}); // Weapon: Ett svärd, no modifier
-        event3Rewards.put(2, new Object[]{0, 0, "Avbruten pil", 0}); // Weapon: Avbruten pil, no modifier
-        event3Rewards.put(3, new Object[]{0, 5, "+1 tvåhands stekpanna", 1}); // Weapon: +1 tvåhands stekpanna, +1 modifier
-        event3Rewards.put(4, new Object[]{0, 100, "Katapult", 0}); // Weapon: Katapult, no modifier
-        event3Rewards.put(5, new Object[]{0, 200, "AK4", 2}); // Weapon: AK4, +2 modifier
-        event3Rewards.put(6, new Object[]{0, 500, "+17 flugsmälla", 3}); // Weapon: +17 flugsmälla, +3 modifier
-        choiceRewards.put(3, event3Rewards);
-
-        // Add more events and their choice rewards as needed
-    }
-
-    public static void printEventChoices(int event, Player player) {
-        System.out.println("\nEvent " + event + ":");
-        if (isStarredEvent(event)) {
-            lastStarredEvent = event;
-            System.out.println("*!");
-        }
-
-        if (event == 1) {
-            System.out.println(player.getName() + " på värdshuset \"Galna tunnan\":");
-            System.out.println("1. Muckar gräl med storväxt person.  .............. (S)");
-            System.out.println("2. Dricker öl.  .................................. (33)");
-            System.out.println("3. Träffar 1d6 äventyrare.  ..................... (9)");
-            System.out.println("4. Smiter från notan.  .......................... (11)");
-            System.out.println("5. Betalar notan (-10 gp) och går ut på stan. .... (*8)");
-            System.out.println("6. Smiter in i rökigt sidorum.  .................. (*201)");
-        } else if (event == 3) {
-            System.out.println(player.getName() + " hittar vapen:");
-            System.out.println("1. Ett svärd. .................................. (5)");
-            System.out.println("2. Avbruten pil, värd 0 gp. .................... (10)");
-            System.out.println("3. +1 tvåhands stekpanna, värd 5 gp. ........... (26)");
-            System.out.println("4. Katapult, värd 100 gp. ..................... (26)");
-            System.out.println("5. AK4, värd 200 gp. .......................... (108)");
-            System.out.println("6. +17 flugsmälla, värd 500 gp. ............... (26)");
-        }
-        // Add more events as needed
-    }
-
-    public static void applyChoiceRewards(int event, int choice, Player player) {
-        if (choiceRewards.containsKey(event)) {
-            Map<Integer, Object[]> rewards = choiceRewards.get(event);
-            if (rewards.containsKey(choice)) {
-                Object[] reward = rewards.get(choice);
-                int exp = (int) reward[0];
-                int gold = (int) reward[1];
-                String weaponName = (String) reward[2];
-                int difficultyModifier = (int) reward[3];
-
-                player.addExperience(exp);
-                player.addGold(gold);
-
-                if (weaponName != null) {
-                    player.setWeapon(weaponName);
-                    player.setDifficultyModifier(difficultyModifier);
-                    System.out.println("Du har fått ett vapen: " + weaponName + " (Modifier: +" + difficultyModifier + ")");
+    public static int handleEvent(int event, int choice, Player player) {
+        switch (event) {
+            case 1:
+                System.out.println(player.getName() + " på värdshuset \"Galna tunnan\":");
+                switch (choice) {
+                    case 1:
+                        System.out.println("Du muckar gräl med en storväxt person. (S)");
+                        player.addExperience(0);
+                        player.addGold(0);
+                        return 10001; // Next event
+                    case 2:
+                        System.out.println("Du dricker öl. (33)");
+                        player.addExperience(0);
+                        player.addGold(0);
+                        return 33; // Next event
+                    case 3:
+                        System.out.println("Du träffar 1d6 äventyrare. (9)");
+                        player.addExperience(10);
+                        player.addGold(0);
+                        return 9; // Next event
+                    case 4:
+                        System.out.println("Du smiter från notan. (11)");
+                        player.addExperience(0);
+                        player.addGold(-10);
+                        return 11; // Next event
+                    case 5:
+                        System.out.println("Du betalar notan (-10 gp) och går ut på stan. (*8)");
+                        player.addExperience(0);
+                        player.addGold(-10);
+                        return 8; // Next event
+                    case 6:
+                        System.out.println("Du smiter in i ett rökigt sidorum. (*201)");
+                        player.addExperience(5);
+                        player.addGold(0);
+                        return 201; // Next event
+                    default:
+                        System.out.println("Ogiltigt val. Spelet avslutas.");
+                        return -1; // End game
                 }
-
-                System.out.println("\nDu har fått " + exp + " EXP och " + gold + " guldpoäng!");
-                System.out.println("Nuvarande status: " + player.getExperience() + " EXP, " + player.getGold() + " GP");
-            }
+            case 3:
+                System.out.println(player.getName() + " hittar vapen:");
+                switch (choice) {
+                    case 1:
+                        System.out.println("Du hittar ett svärd. (5)");
+                        player.setWeapon("Ett svärd");
+                        player.setDifficultyModifier(0);
+                        return 5; // Next event
+                    case 2:
+                        System.out.println("Du hittar en avbruten pil. (10)");
+                        player.setWeapon("Avbruten pil");
+                        player.setDifficultyModifier(0);
+                        return 10; // Next event
+                    case 3:
+                        System.out.println("Du hittar en +1 tvåhands stekpanna. (26)");
+                        player.setWeapon("+1 tvåhands stekpanna");
+                        player.setDifficultyModifier(1);
+                        return 26; // Next event
+                    case 4:
+                        System.out.println("Du hittar en katapult. (26)");
+                        player.setWeapon("Katapult");
+                        player.setDifficultyModifier(0);
+                        return 26; // Next event
+                    case 5:
+                        System.out.println("Du hittar en AK4. (108)");
+                        player.setWeapon("AK4");
+                        player.setDifficultyModifier(2);
+                        return 108; // Next event
+                    case 6:
+                        System.out.println("Du hittar en +17 flugsmälla. (26)");
+                        player.setWeapon("+17 flugsmälla");
+                        player.setDifficultyModifier(3);
+                        return 26; // Next event
+                    default:
+                        System.out.println("Ogiltigt val. Spelet avslutas.");
+                        return -1; // End game
+                }
+                // Add more events here
+            default:
+                System.out.println("Event " + event + " är inte implementerat ännu.");
+                return -1; // End game
         }
-    }
-
-    public static boolean hasWeaponReward(int event, int choice) {
-        if (choiceRewards.containsKey(event)) {
-            Map<Integer, Object[]> rewards = choiceRewards.get(event);
-            if (rewards.containsKey(choice)) {
-                Object[] reward = rewards.get(choice);
-                return reward[2] != null; // Check if a weapon is present
-            }
-        }
-        return false;
-    }
-
-    public static String getWeaponReward(int event, int choice) {
-        if (choiceRewards.containsKey(event)) {
-            Map<Integer, Object[]> rewards = choiceRewards.get(event);
-            if (rewards.containsKey(choice)) {
-                Object[] reward = rewards.get(choice);
-                return (String) reward[2]; // Return the weapon name
-            }
-        }
-        return null; // No weapon reward
-    }
-
-    public static boolean hasNextEvent(int event) {
-        return events.containsKey(event); // Check if the event exists in the events map
     }
 
     public static boolean isStarredEvent(int event) {
         return starredEvents.contains(event);
-    }
-
-    public static int getNextEvent(int event, int choice) {
-        int[] nextEvents = events.get(event);
-        return nextEvents[choice - 1];
     }
 }

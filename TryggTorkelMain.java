@@ -4,7 +4,6 @@ public class TryggTorkelMain {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         EventManager.initializeEvents();
-        EventManager.initializeChoiceRewards();
 
         System.out.print("Ange ditt namn: ");
         String playerName = scanner.nextLine();

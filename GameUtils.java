@@ -16,23 +16,15 @@ public class GameUtils {
 
     public static void startGame(Player player, Scanner scanner) {
         int currentEvent = 1;
-        while (currentEvent <= 217) {
+        while (currentEvent > 0 && currentEvent <= 217) {
             System.out.println("\n" + player.getName() + " är nu vid event " + currentEvent);
-            EventManager.printEventChoices(currentEvent, player);
-
-            if (BattleManager.hasBattleEvent(currentEvent)) {
-                BattleManager.startBattle(scanner, player, currentEvent);
-            }
-
             int diceRoll = rollDice(scanner, player.isManualDice());
-            EventManager.applyChoiceRewards(currentEvent, diceRoll, player);
+            currentEvent = EventManager.handleEvent(currentEvent, diceRoll, player);
 
-            if (!EventManager.hasNextEvent(currentEvent)) {
+            if (currentEvent == -1) {
                 System.out.println("Spelet är slut! Ingen fortsättning från detta event.");
                 break;
             }
-
-            currentEvent = EventManager.getNextEvent(currentEvent, diceRoll);
         }
 
         System.out.println("Äventyret är över! Tack för att du spelade, " + player.getName() + "!");

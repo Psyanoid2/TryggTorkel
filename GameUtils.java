@@ -24,11 +24,6 @@ public class GameUtils {
                 BattleManager.startBattle(scanner, player, currentEvent);
             }
 
-            if (EventManager.hasWeaponReward(currentEvent)) {
-                player.setWeapon(EventManager.getWeaponReward(currentEvent));
-                System.out.println("Du har fått ett vapen: " + player.getWeapon());
-            }
-
             int diceRoll = rollDice(scanner, player.isManualDice());
             EventManager.applyChoiceRewards(currentEvent, diceRoll, player);
 

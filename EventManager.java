@@ -92,6 +92,32 @@ public class EventManager {
         }
     }
 
+    public static boolean hasWeaponReward(int event, int choice) {
+        if (choiceRewards.containsKey(event)) {
+            Map<Integer, Object[]> rewards = choiceRewards.get(event);
+            if (rewards.containsKey(choice)) {
+                Object[] reward = rewards.get(choice);
+                return reward[2] != null; // Check if a weapon is present
+            }
+        }
+        return false;
+    }
+
+    public static String getWeaponReward(int event, int choice) {
+        if (choiceRewards.containsKey(event)) {
+            Map<Integer, Object[]> rewards = choiceRewards.get(event);
+            if (rewards.containsKey(choice)) {
+                Object[] reward = rewards.get(choice);
+                return (String) reward[2]; // Return the weapon name
+            }
+        }
+        return null; // No weapon reward
+    }
+
+    public static boolean hasNextEvent(int event) {
+        return events.containsKey(event); // Check if the event exists in the events map
+    }
+
     public static boolean isStarredEvent(int event) {
         return starredEvents.contains(event);
     }
